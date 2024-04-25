@@ -198,9 +198,8 @@ def backtest_trading(data, cash):
                         margin=1/30, commission=0.00)
     stats, heatmap = backtest.optimize(slcoef=[i/10 for i in range(10, 26)],
                                        TPSLRatio=[i/10 for i in range(10, 26)],
-                                       # rsi_length=[5, 8, 10, 12, 14, 16],
                                        maximize='Return [%]', max_tries=300,
                                        random_state=0,
                                        return_heatmap=True)
 
-    return stats, heatmap
+    return backtest, stats, heatmap

@@ -22,9 +22,7 @@ def download_data(symbol, period, interval):
         interval=interval,
     )
     tickerDf = tickerDf[tickerDf.High != tickerDf.Low]
-
-    print(tickerDf)
-    tickerDf.to_csv(f"../data/{symbol.lower()}-{interval}-{period}.csv")
+    tickerDf.to_csv(f"../data/{symbol.lower()}-{period}-{interval}.csv")
     return tickerDf
 
 

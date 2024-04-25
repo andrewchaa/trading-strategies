@@ -10,8 +10,22 @@ from backtesting import Backtest
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+import yfinance as yf
 
 tqdm.pandas()
+
+
+def download_data(symbol, period, interval):
+    tickerData = yf.Ticker(symbol)
+    tickerDf = tickerData.history(
+        period=period,
+        interval=interval,
+    )
+    tickerDf = tickerDf[tickerDf.High != tickerDf.Low]
+
+    print(tickerDf)
+    tickerDf.to_csv(f"../data/{symbol.lower()}-{interval}-{period}.csv")
+    return tickerDf
 
 
 def read_data(symbol, period, interval):
@@ -39,9 +53,11 @@ def set_atr(data):
     data['ATR'] = ta.atr(data.High, data.Low, data.Close, length=7)
     return data
 
+
 def set_rsi(data, rsi_length):
     data['RSI'] = ta.rsi(data.Close, length=rsi_length)
     return data
+
 
 def set_adx(data, length):
     adx = ta.adx(data['High'], data['Low'], data['Close'], length=length)
@@ -49,6 +65,7 @@ def set_adx(data, length):
     data['ADX_pos'] = adx.DMP_14
     data['ADX_neg'] = adx.DMN_14
     return data
+
 
 def ema_trade_signal(data, current, back_candles):
     start = max(0, current - back_candles)
@@ -94,6 +111,7 @@ def set_macd_trade_signal(data):
     )
     return data
 
+
 def set_rsi_trade_signal(data):
     data['RSI_trade_signal'] = data.progress_apply(
         lambda r: 1 if r.RSI > 70 else -1 if r.RSI < 30 else 0,
@@ -101,12 +119,14 @@ def set_rsi_trade_signal(data):
     )
     return data
 
+
 def set_adx_trade_signal(data):
     data['ADX_trade_signal'] = data.progress_apply(
         lambda r: 1 if r.ADX > 30 else 0,
         axis='columns'
     )
     return data
+
 
 def set_total_trade_signal(data, total_trade_signal):
     data['Total_trade_signal'] = data.progress_apply(
@@ -148,12 +168,14 @@ class MacdStrategy(Strategy):
             tp1 = self.data.Close[-1] - slatr*TPSLRatio
             self.sell(sl=sl1, tp=tp1, size=self.mysize)
 
+
 def set_indicators(data, ema_length):
     set_ema(data, ema_length)
     set_macd(data)
     set_atr(data)
     set_rsi(data, 14)
     set_adx(data, 14)
+
 
 def set_trade_signals(data, total_trade_signal):
     set_ema_trade_signal(data)
@@ -164,6 +186,7 @@ def set_trade_signals(data, total_trade_signal):
     set_total_trade_signal(data, total_trade_signal)
     print(f'number of trades: {data[data.Total_trade_signal != 0].shape[0]}')
 
+
 def show_heatmap(heatmap):
     # Convert multiindex series to dataframe
     heatmap_dataFrame = heatmap.unstack()
@@ -171,13 +194,15 @@ def show_heatmap(heatmap):
     sns.heatmap(heatmap_dataFrame, annot=True, cmap='viridis', fmt='.0f')
     plt.show()
 
+
 def backtest_trading(data, cash):
-    backtest = Backtest(data, MacdStrategy, cash=cash, margin=1/30, commission=0.00)
+    backtest = Backtest(data, MacdStrategy, cash=cash,
+                        margin=1/30, commission=0.00)
     stats, heatmap = backtest.optimize(slcoef=[i/10 for i in range(10, 26)],
-                        TPSLRatio=[i/10 for i in range(10, 26)],
-                        #rsi_length=[5, 8, 10, 12, 14, 16],
-                        maximize='Return [%]', max_tries=300,
-                            random_state=0,
-                            return_heatmap=True)
+                                       TPSLRatio=[i/10 for i in range(10, 26)],
+                                       # rsi_length=[5, 8, 10, 12, 14, 16],
+                                       maximize='Return [%]', max_tries=300,
+                                       random_state=0,
+                                       return_heatmap=True)
 
     return stats, heatmap

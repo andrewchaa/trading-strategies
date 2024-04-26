@@ -182,7 +182,9 @@ def set_trade_signals(data, total_trade_signal):
     set_adx_trade_signal(data)
 
     set_total_trade_signal(data, total_trade_signal)
-    print(f'number of trades: {data[data.Total_trade_signal != 0].shape[0]}')
+    number_of_trades = data[data.Total_trade_signal != 0].shape[0]
+    print(f'number of trades: {number_of_trades}')
+    return number_of_trades
 
 
 def show_heatmap(heatmap):
@@ -195,7 +197,7 @@ def show_heatmap(heatmap):
 
 def backtest_trading(data, cash):
     backtest = Backtest(data, MacdStrategy, cash=cash,
-                        margin=1/30, commission=0.00)
+                        margin=1/30, commission=0.0002) # 0.02% of the trade value as commission
     stats, heatmap = backtest.optimize(slcoef=[i/10 for i in range(10, 26)],
                                        TPSLRatio=[i/10 for i in range(10, 26)],
                                        maximize='Return [%]', max_tries=300,

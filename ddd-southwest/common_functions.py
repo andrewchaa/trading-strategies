@@ -30,7 +30,7 @@ def read_data(symbol, period, interval):
     data = pd.read_csv(f'../data/{symbol}-{period}-{interval}.csv')
     data.Datetime = pd.to_datetime(data.Datetime, utc=True)
     data.set_index('Datetime', inplace=False)
-    data.drop(['Dividends', 'Stock Splits', 'Volume'], axis='columns', inplace=True)
+    data.drop(['Dividends', 'Stock Splits'], axis='columns', inplace=True)
     return data
 
 

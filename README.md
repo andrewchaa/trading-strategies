@@ -1,5 +1,3 @@
-Here is a possible GitHub README file with the specified content:
-```
 # DDDSouthWest 2024 Talk: Unleash Your Inner Trader
 
 This repository contains the presentation slides and code examples for my talk "Unleash Your Inner Trader" at DDDSouthWest 2024.
@@ -35,5 +33,3 @@ The code and presentation slides in this repository are licensed under the MIT L
 ## Contact
 
 If you have any questions or feedback, please don't hesitate to reach out to me at [Your Email Address].
-```
-Feel free to customize the README file to fit your needs!

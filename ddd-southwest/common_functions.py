@@ -46,6 +46,14 @@ def set_macd(data):
     data['MACD_histogram'] = macd.loc[:, 'MACDh_12_26_9']
     return data
 
+def set_bbands(data, length=14, std=2.0):
+    my_bbands = ta.bbands(data.Close, length=length, std=std)
+    data['BBL_14_2.0'] = my_bbands.loc[:, 'BBL_14_2.0']
+    data['BBM_14_2.0'] = my_bbands.loc[:, 'BBM_14_2.0']
+    data['BBU_14_2.0'] = my_bbands.loc[:, 'BBU_14_2.0']
+    data['BBB_14_2.0'] = my_bbands.loc[:, 'BBB_14_2.0']
+    data['BBP_14_2.0'] = my_bbands.loc[:, 'BBP_14_2.0']
+    return data
 
 def set_atr(data):
     data['ATR'] = ta.atr(data.High, data.Low, data.Close, length=7)
@@ -100,7 +108,6 @@ def macd_trade_signal(data, current):
     ):
         return -1
     return 0
-
 
 def set_macd_trade_signal(data):
     data['MACD_trade_signal'] = data.progress_apply(
@@ -165,6 +172,7 @@ def set_indicators(data, ema_length):
     set_atr(data)
     set_rsi(data, 14)
     set_adx(data, 14)
+    set_bbands(data)
 
 
 def set_trade_signals(data, total_trade_signal):

@@ -25,3 +25,10 @@ def total_macd_ema_trade_signal(row):
         return -1
     else:
         return 0
+
+def total_bolinger_band_signal(row):
+    if (row.Close<=row['BBL_14_2.0']):
+            return 1
+    if (row.Close>=row['BBU_14_2.0']):
+            return -1
+    return 0

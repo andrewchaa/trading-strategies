@@ -4,7 +4,7 @@ This repository contains the presentation slides and code examples for my talk "
 
 ## Presentation Slides
 
-The presentation slides are available in the `slides` directory. They cover the following topics:
+The presentation slides are available on [Google Slides](https://docs.google.com/presentation/d/19Ty77IjRgX0B9JJ7WzeZV3_eR30AOwI2caLbxasyCfg/edit?usp=sharing). They cover the following topics:
 
 * Introduction to technical indicators
 * MACD (Moving Average Convergence Divergence) indicator
@@ -14,15 +14,11 @@ The presentation slides are available in the `slides` directory. They cover the 
 
 ## Code Examples
 
-The code examples are available in the `code` directory. They demonstrate how to use the following indicators in Python:
-
-* `macd_example.py`: Using the MACD indicator to generate buy and sell signals
-* `macd_ema_example.py`: Using the MACD indicator with EMA to generate buy and sell signals
-* `bollinger_band_example.py`: Using the Bollinger Band indicator to generate buy and sell signals
+The code examples are available in the `ddd-southwest` directory. 
 
 ## Requirements
 
-* Python 3.8 or later
+* Python 3.11 or later
 * `pandas` library for data manipulation
 * `matplotlib` library for plotting
 
@@ -32,4 +28,4 @@ The code and presentation slides in this repository are licensed under the MIT L
 
 ## Contact
 
-If you have any questions or feedback, please don't hesitate to reach out to me at [Your Email Address].
+If you have any questions or feedback, please don't hesitate to reach out to me at [andrew.yh.chaa@gmail.com].

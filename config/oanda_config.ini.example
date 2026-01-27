@@ -1,0 +1,23 @@
+# OANDA API Configuration
+# 
+# INSTRUCTIONS:
+# 1. Copy this file and rename it to remove .example (should be: oanda_config.ini)
+# 2. Fill in your actual API credentials
+# 3. NEVER commit the actual oanda_config.ini file to version control
+#
+# To get your OANDA credentials:
+# - Practice Account: https://www.oanda.com/demo-account/tpa/personal_info
+# - Live Account: https://www.oanda.com/account/tpa/personal_info
+# - API Token: Account > Manage API Access > Generate Token
+
+[practice]
+api_token = YOUR_PRACTICE_TOKEN_HERE
+account_id = YOUR_PRACTICE_ACCOUNT_ID
+
+[live]
+api_token = YOUR_LIVE_TOKEN_HERE
+account_id = YOUR_LIVE_ACCOUNT_ID
+
+[settings]
+base_url_practice = https://api-fxpractice.oanda.com
+base_url_live = https://api-fxtrade.oanda.com

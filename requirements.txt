@@ -20,3 +20,7 @@ configparser>=6.0.0
 # Utilities
 python-dateutil>=2.8.0
 pytz>=2023.3
+
+# Development tools
+nbstripout>=0.7.0
+pre-commit>=3.5.0

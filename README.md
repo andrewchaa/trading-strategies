@@ -74,6 +74,9 @@ conda activate trading
 
 ```bash
 pip install -r requirements.txt
+
+# Install pre-commit hooks (protects against committing sensitive data)
+pre-commit install
 ```
 
 ### 4. Configure OANDA Credentials

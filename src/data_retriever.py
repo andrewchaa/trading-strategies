@@ -231,11 +231,16 @@ class HistoricalDataRetriever:
             if request_count > 0:
                 time.sleep(0.01)
 
+            max_chunk_end = current_from + timedelta(
+                seconds=candle_seconds * max_candles
+            )
+            chunk_end = min(max_chunk_end, to_dt)
+
             # Prepare request parameters
             params = {
                 "granularity": granularity,
                 "from": current_from.strftime("%Y-%m-%dT%H:%M:%S.000000000Z"),
-                "to": to_dt.strftime("%Y-%m-%dT%H:%M:%S.000000000Z"),
+                "to": chunk_end.strftime("%Y-%m-%dT%H:%M:%S.000000000Z"),
                 "price": price_type,
             }
 
@@ -261,11 +266,12 @@ class HistoricalDataRetriever:
                 )
                 current_from += timedelta(seconds=candle_seconds)
 
-                # If we got fewer candles than requested, we've reached the end
-                if len(candles) < max_candles:
-                    self.logger.debug(
-                        "Received fewer candles than requested - end of data"
-                    )
+                if current_from >= to_dt:
+                    self.logger.debug("Reached end date")
+                    break
+
+                if len(candles) < max_candles and chunk_end >= to_dt:
+                    self.logger.debug("Received all available data")
                     break
 
             except Exception as e:

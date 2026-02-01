@@ -250,6 +250,73 @@ The system automatically handles these limits through:
 - Request throttling
 - Automatic pagination with smart time-based iteration
 
+## Trading Journal
+
+Track all your trades systematically to improve performance over time. A comprehensive trading journal is essential for developing consistent, profitable trading strategies.
+
+### Using the Journal Template
+
+1. **Get Started**: Copy `templates/trading_journal_template.csv` to your working directory
+2. **Make a Copy**: Save as `trading_journal_2024.csv` (or current year) to preserve the template
+3. **Log Every Trade**: Fill in all columns immediately after each trade closes
+4. **Review Weekly**: Analyze patterns, common mistakes, and best-performing setups
+5. **Update Metrics**: Calculate win rate, average R:R ratio, and profit factor monthly
+
+### Column Explanations
+
+| Column | Purpose | Example |
+|--------|---------|---------|
+| **Trade #** | Sequential trade identifier | 1, 2, 3, ... |
+| **Date & Time** | Trade entry date and time | 2024-01-15, 08:45 |
+| **Pair** | Currency pair traded | EUR/USD, GBP/USD |
+| **Strategy** | Trading strategy used | RSI Mean Reversion, Support Resistance |
+| **Direction** | Long or Short position | Long, Short |
+| **Entry/Exit Price** | Market prices at entry and exit | 1.0890, 1.0910 |
+| **Stop Loss/Take Profit** | Risk management levels | 1.0870, 1.0930 |
+| **Position Size** | Lot size traded | 0.5, 1.0 |
+| **Duration** | How long trade was held | 2.75 hours |
+| **P&L (pips)** | Profit/loss in pips | 20, -15 |
+| **P&L ($)** | Profit/loss in dollars | 100.00, -75.50 |
+| **R:R Ratio** | Actual risk-to-reward ratio achieved | 2.0, 1.5 |
+| **Setup Quality (1-5)** | Rate the setup quality | 5 = textbook perfect, 3 = mediocre |
+| **Confidence (1-5)** | Your confidence level before trade | 5 = very confident, 1 = uncertain |
+| **Emotions** | Emotions before and after | Calm/Confident, Greedy/Excited |
+| **Discipline (1-5)** | How well you followed your trading rules | 5 = perfect execution, 1 = many violations |
+| **Notes** | Detailed trade commentary | Setup details, market conditions, why you exited |
+| **Mistakes** | What went wrong (if applicable) | Entered without confirmation, exited early |
+| **Lessons Learned** | Key takeaways from this trade | Wait for confirmation, use stricter stops |
+
+### Tips for Effective Journaling
+
+1. **Be Honest**: Record emotions and mistakes truthfully—this data is for YOU
+2. **Be Consistent**: Log EVERY single trade, no exceptions
+3. **Be Detailed**: More notes = more learning opportunities. Use mistakes and lessons learned sections heavily
+4. **Review Regularly**: Weekly review to identify patterns (best times of day, best setups, emotional triggers)
+5. **Track Metrics Monthly**:
+   - Win Rate: Total wins / Total trades
+   - Average R:R: Sum of R:R / Number of trades
+   - Profit Factor: Gross wins / Gross losses
+   - Best Setup: Which strategy performs best
+   - Worst Time: When do you lose most trades
+
+### Sample Journal Entry Analysis
+
+```
+Trade #1: EUR/USD RSI Mean Reversion (WIN)
+- Setup Quality: 4/5 (good touch of Bollinger Band)
+- Confidence: 4/5 (solid signal, minor hesitation)
+- Win Rate Impact: +1 (1-0)
+- R:R Achievement: 2.0 (risked 20 pips, gained 40 pips profit → 2.0 RR)
+- Key Lesson: Wait for RSI confirmation below 20
+
+Trade #2: GBP/USD Breakout (LOSS)
+- Setup Quality: 2/5 (false breakout signal)
+- Confidence: 3/5 (uncertain about breakout)
+- Win Rate Impact: -1 (1-1)
+- Mistakes: Entered without waiting for confirmation
+- Lesson: Require at least 2 closes above resistance before breakout entry
+```
+
 ## Logging
 
 All operations are logged to `logs/data_retrieval.log`:

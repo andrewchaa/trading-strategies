@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fetch M15 EUR_USD historical data for 2024
+Fetch M15 historical data for all major currency pairs for 2025
 """
 
 import logging
@@ -14,6 +14,11 @@ from src.oanda_client import OandaClient
 from src.data_retriever import HistoricalDataRetriever
 from src.data_storage import DataStorage
 
+MAJOR_PAIRS = ['EUR_USD', 'GBP_USD', 'USD_JPY', 'USD_CHF', 'USD_CAD', 'AUD_USD', 'NZD_USD']
+FROM_DATE = '2025-01-01'
+TO_DATE = '2025-12-31'
+GRANULARITY = 'M15'
+
 
 def setup_logging():
     """Configure logging."""
@@ -23,78 +28,53 @@ def setup_logging():
 
 
 def main():
-    """Fetch M15 EUR_USD data for 2024."""
+    """Fetch M15 data for all major pairs for 2025."""
     setup_logging()
     logger = logging.getLogger(__name__)
 
-    logger.info("Starting M15 EUR_USD data retrieval for 2024")
+    logger.info(f"Starting {GRANULARITY} data retrieval for {len(MAJOR_PAIRS)} major pairs ({FROM_DATE} to {TO_DATE})")
 
-    try:
-        # Initialize client
-        logger.info("Initializing OANDA client...")
-        config_path = Path(__file__).parent / "config" / "oanda_config.ini"
-        client = OandaClient(environment="practice", config_path=str(config_path))
-        logger.info("✓ OANDA client initialized")
+    config_path = Path(__file__).parent / "config" / "oanda_config.ini"
+    client = OandaClient(environment="practice", config_path=str(config_path))
+    retriever = HistoricalDataRetriever(client)
+    storage = DataStorage()
 
-        # Initialize retriever
-        retriever = HistoricalDataRetriever(client)
+    results = []
+    for i, pair in enumerate(MAJOR_PAIRS, 1):
+        logger.info(f"[{i}/{len(MAJOR_PAIRS)}] Fetching {pair} {GRANULARITY}...")
+        try:
+            df = retriever.fetch_historical_data(
+                instrument=pair,
+                granularity=GRANULARITY,
+                from_date=FROM_DATE,
+                to_date=TO_DATE,
+            )
+            file_path = storage.save_to_csv(
+                df=df,
+                instrument=pair,
+                granularity=GRANULARITY,
+                from_date=FROM_DATE,
+                to_date=TO_DATE,
+            )
+            logger.info(f"  ✓ Saved {len(df):,} candles to {file_path}")
+            results.append((pair, len(df), str(file_path), None))
+        except Exception as e:
+            logger.error(f"  ✗ Error: {e}")
+            results.append((pair, 0, None, str(e)))
 
-        # Fetch data
-        logger.info("Fetching EUR_USD M15 data from 2024-01-01 to 2024-12-31...")
-        df = retriever.fetch_historical_data(
-            instrument="EUR_USD",
-            granularity="M15",
-            from_date="2024-01-01",
-            to_date="2024-12-31",
-        )
+    logger.info("")
+    logger.info("=" * 60)
+    logger.info("SUMMARY")
+    logger.info("=" * 60)
+    for pair, count, path, error in results:
+        if error:
+            logger.info(f"  {pair}: FAILED - {error}")
+        else:
+            logger.info(f"  {pair}: {count:,} candles -> {path}")
+    logger.info("=" * 60)
 
-        if df.empty:
-            logger.error("✗ No data retrieved!")
-            return False
-
-        logger.info(f"✓ Retrieved {len(df)} candles")
-        logger.info(f"  Date range: {df['time'].min()} to {df['time'].max()}")
-        logger.info(f"  Price range: {df['low'].min():.5f} to {df['high'].max():.5f}")
-
-        # Save to CSV
-        logger.info("Saving data to CSV...")
-        storage = DataStorage()
-        file_path = storage.save_to_csv(
-            df=df,
-            instrument="EUR_USD",
-            granularity="M15",
-            from_date="2024-01-01",
-            to_date="2024-12-31",
-        )
-        logger.info(f"✓ Data saved to: {file_path}")
-
-        # Verify file
-        logger.info("Verifying file...")
-        file_size = Path(file_path).stat().st_size / 1024 / 1024
-        logger.info(f"✓ File size: {file_size:.2f} MB")
-
-        # Summary
-        logger.info("")
-        logger.info("=" * 60)
-        logger.info("SUMMARY")
-        logger.info("=" * 60)
-        logger.info(f"Instrument:     EUR_USD")
-        logger.info(f"Granularity:    M15")
-        logger.info(f"Date Range:     2024-01-01 to 2024-12-31")
-        logger.info(f"Candles:        {len(df):,}")
-        logger.info(f"Start Price:    {df['open'].iloc[0]:.5f}")
-        logger.info(f"End Price:      {df['close'].iloc[-1]:.5f}")
-        logger.info(f"Min Price:      {df['low'].min():.5f}")
-        logger.info(f"Max Price:      {df['high'].max():.5f}")
-        logger.info(f"Avg Volume:     {df['volume'].mean():.0f}")
-        logger.info(f"File Path:      {file_path}")
-        logger.info("=" * 60)
-
-        return True
-
-    except Exception as e:
-        logger.error(f"✗ Error: {str(e)}", exc_info=True)
-        return False
+    failed = [r for r in results if r[3]]
+    return len(failed) == 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,40 @@
+name: Daily Donchian Signal
+
+on:
+  schedule:
+    - cron: '5 22 * * 1-5'  # 22:05 UTC Mon–Fri (after daily candle closes)
+  workflow_dispatch:          # Manual trigger button in GitHub UI for testing
+
+jobs:
+  run-signal:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write OANDA config
+        env:
+          OANDA_API_TOKEN: ${{ secrets.OANDA_API_TOKEN }}
+          OANDA_ACCOUNT_ID: ${{ secrets.OANDA_ACCOUNT_ID }}
+        run: |
+          mkdir -p config
+          {
+            echo "[practice]"
+            echo "api_token = $OANDA_API_TOKEN"
+            echo "account_id = $OANDA_ACCOUNT_ID"
+            echo ""
+            echo "[settings]"
+            echo "base_url_practice = https://api-fxpractice.oanda.com"
+            echo "base_url_live = https://api-fxtrade.oanda.com"
+          } > config/oanda_config.ini
+
+      - name: Run signal detector
+        run: python run_daily.py --instrument GBP_USD --practice

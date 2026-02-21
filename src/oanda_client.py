@@ -99,7 +99,7 @@ class OandaClient:
 
         self.logger.debug(f"Configuration loaded from {self.config_path}")
 
-    def _request(self, method: str, endpoint: str, params: Optional[Dict] = None) -> Dict:
+    def _request(self, method: str, endpoint: str, params: Optional[Dict] = None, json: Optional[Dict] = None) -> Dict:
         """
         Make a request to OANDA API.
 
@@ -107,6 +107,7 @@ class OandaClient:
             method: HTTP method ('GET', 'POST', etc.)
             endpoint: API endpoint (e.g., '/accounts/{accountID}')
             params: Query parameters
+            json: JSON body for POST requests
 
         Returns:
             JSON response as dictionary
@@ -118,7 +119,7 @@ class OandaClient:
 
         response = None
         try:
-            response = self.session.request(method, url, params=params, timeout=30)
+            response = self.session.request(method, url, params=params, json=json, timeout=30)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as e:
@@ -250,6 +251,70 @@ class OandaClient:
             return self._request('GET', endpoint, params=params)
         except Exception as e:
             self.logger.error(f"Failed to fetch candles: {str(e)}")
+            raise
+
+    def get_open_positions(self) -> List[Dict]:
+        """
+        Get all open positions for the account.
+
+        Returns:
+            List of dicts with 'instrument', 'long_units', 'short_units'
+
+        Raises:
+            Exception: If API request fails
+        """
+        try:
+            response = self._request('GET', f'/v3/accounts/{self.account_id}/openPositions')
+            positions = []
+            for pos in response.get('positions', []):
+                positions.append({
+                    'instrument': pos['instrument'],
+                    'long_units': int(pos['long']['units']),
+                    'short_units': int(pos['short']['units']),
+                })
+            return positions
+        except Exception as e:
+            self.logger.error(f"Failed to fetch open positions: {str(e)}")
+            raise
+
+    def place_market_order(
+        self,
+        instrument: str,
+        units: int,
+        sl_price: float,
+        tp_price: float,
+    ) -> Dict:
+        """
+        Place a market order with attached stop loss and take profit.
+
+        Args:
+            instrument: Instrument name (e.g., 'GBP_USD')
+            units: Position size — positive = buy, negative = sell
+            sl_price: Stop loss price
+            tp_price: Take profit price
+
+        Returns:
+            Order response dictionary
+
+        Raises:
+            Exception: If API request fails
+        """
+        body = {
+            "order": {
+                "type": "MARKET",
+                "instrument": instrument,
+                "units": str(units),
+                "timeInForce": "FOK",
+                "stopLossOnFill": {"price": f"{sl_price:.5f}", "timeInForce": "GTC"},
+                "takeProfitOnFill": {"price": f"{tp_price:.5f}", "timeInForce": "GTC"},
+            }
+        }
+        try:
+            response = self._request('POST', f'/v3/accounts/{self.account_id}/orders', json=body)
+            self.logger.info(f"Market order placed: {instrument} {units} units")
+            return response
+        except Exception as e:
+            self.logger.error(f"Failed to place market order: {str(e)}")
             raise
 
 

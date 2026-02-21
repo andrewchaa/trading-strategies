@@ -18,9 +18,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          grep -v "^pandas-ta" requirements.txt | pip install -r /dev/stdin
-          pip install "git+https://github.com/twopirllc/pandas-ta@development"
+        run: grep -v "^pandas-ta" requirements.txt | pip install -r /dev/stdin
 
       - name: Write OANDA config
         env:

@@ -2,10 +2,20 @@
 Donchian Breakout Signal Detector
 
 Replicates the DonchianBreakout.next() logic for live signal detection.
+No pandas-ta dependency — ATR is computed directly.
 """
 
 import pandas as pd
-import pandas_ta as ta
+
+
+def _atr(high, low, close, length):
+    """Wilder's ATR using EWM smoothing (matches pandas-ta default)."""
+    tr = pd.concat([
+        high - low,
+        (high - close.shift(1)).abs(),
+        (low - close.shift(1)).abs(),
+    ], axis=1).max(axis=1)
+    return tr.ewm(alpha=1 / length, adjust=False, min_periods=length).mean()
 
 
 def detect_signal(
@@ -36,7 +46,7 @@ def detect_signal(
 
     upper = high.shift(1).rolling(dc_period).max()
     lower = low.shift(1).rolling(dc_period).min()
-    atr = ta.atr(high, low, close, length=atr_period)
+    atr = _atr(high, low, close, length=atr_period)
 
     last_upper = upper.iloc[-1]
     last_lower = lower.iloc[-1]

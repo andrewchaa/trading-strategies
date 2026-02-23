@@ -37,4 +37,4 @@ jobs:
           } > config/oanda_config.ini
 
       - name: Run signal detector
-        run: python run_daily.py --instrument GBP_USD --practice
+        run: python run_daily.py --practice

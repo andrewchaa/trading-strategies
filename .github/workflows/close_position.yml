@@ -39,4 +39,4 @@ jobs:
           } > config/oanda_config.ini
 
       - name: Close position
-        run: python close_position.py --instrument GBP_USD --practice
+        run: python close_position.py --practice

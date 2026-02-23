@@ -338,14 +338,15 @@ class OandaClient:
         Raises:
             Exception: If API request fails
         """
+        decimals = 3 if 'JPY' in instrument else 5
         body = {
             "order": {
                 "type": "MARKET",
                 "instrument": instrument,
                 "units": str(units),
                 "timeInForce": "FOK",
-                "stopLossOnFill": {"price": f"{sl_price:.5f}", "timeInForce": "GTC"},
-                "takeProfitOnFill": {"price": f"{tp_price:.5f}", "timeInForce": "GTC"},
+                "stopLossOnFill": {"price": f"{sl_price:.{decimals}f}", "timeInForce": "GTC"},
+                "takeProfitOnFill": {"price": f"{tp_price:.{decimals}f}", "timeInForce": "GTC"},
             }
         }
         try:

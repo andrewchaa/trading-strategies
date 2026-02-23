@@ -2,7 +2,7 @@ name: Daily Donchian Signal
 
 on:
   schedule:
-    - cron: '5 22 * * 1-5'  # 22:05 UTC Mon–Fri (after daily candle closes)
+    - cron: '5 22 * * 1-4'  # 22:05 UTC Mon–Thu (Fri skipped: weekend spread risk)
   workflow_dispatch:          # Manual trigger button in GitHub UI for testing
 
 jobs:

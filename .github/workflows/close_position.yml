@@ -1,0 +1,42 @@
+name: Close Position (EOD)
+
+on:
+  schedule:
+    # 20:55 UTC Mon–Thu — always before the OANDA daily close
+    # (21:00 UTC in summer EDT / 22:00 UTC in winter EST)
+    - cron: '55 20 * * 1-4'
+  workflow_dispatch:
+
+jobs:
+  close-position:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: grep -v "^pandas-ta" requirements.txt | pip install -r /dev/stdin
+
+      - name: Write OANDA config
+        env:
+          OANDA_API_TOKEN: ${{ secrets.OANDA_API_TOKEN_PRACTICE }}
+          OANDA_ACCOUNT_ID: "101-004-28715689-001"
+        run: |
+          mkdir -p config
+          {
+            echo "[practice]"
+            echo "api_token = $OANDA_API_TOKEN"
+            echo "account_id = $OANDA_ACCOUNT_ID"
+            echo ""
+            echo "[settings]"
+            echo "base_url_practice = https://api-fxpractice.oanda.com"
+            echo "base_url_live = https://api-fxtrade.oanda.com"
+          } > config/oanda_config.ini
+
+      - name: Close position
+        run: python close_position.py --instrument GBP_USD --practice

@@ -253,6 +253,45 @@ class OandaClient:
             self.logger.error(f"Failed to fetch candles: {str(e)}")
             raise
 
+    def close_position(self, instrument: str) -> Optional[Dict]:
+        """
+        Close all open units of a position for an instrument.
+
+        Args:
+            instrument: Instrument name (e.g., 'GBP_USD')
+
+        Returns:
+            Response dict, or None if no position was open.
+
+        Raises:
+            Exception: If API request fails
+        """
+        positions = self.get_open_positions()
+        target = next((p for p in positions if p['instrument'] == instrument), None)
+        if target is None:
+            return None
+
+        body = {}
+        if target['long_units'] > 0:
+            body['longUnits'] = 'ALL'
+        if target['short_units'] < 0:
+            body['shortUnits'] = 'ALL'
+
+        if not body:
+            return None
+
+        try:
+            response = self._request(
+                'PUT',
+                f'/v3/accounts/{self.account_id}/positions/{instrument}/close',
+                json=body,
+            )
+            self.logger.info(f"Closed position: {instrument}")
+            return response
+        except Exception as e:
+            self.logger.error(f"Failed to close position {instrument}: {str(e)}")
+            raise
+
     def get_open_positions(self) -> List[Dict]:
         """
         Get all open positions for the account.

@@ -74,13 +74,6 @@ def main():
 
     logger.info(f"Signal detected: side={signal['side']} entry~{signal['entry_price']:.5f} sl_dist={signal['sl_dist']:.5f}")
 
-    # Skip if already holding this instrument
-    open_positions = client.get_open_positions()
-    for pos in open_positions:
-        if pos['instrument'] == instrument:
-            logger.info(f"Already holding {instrument} (long={pos['long_units']} short={pos['short_units']}), skipping")
-            return
-
     account = client.get_account_info()
     balance = float(account['balance'])
     logger.info(f"Account balance: {balance}")
